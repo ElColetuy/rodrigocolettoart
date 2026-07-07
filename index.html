@@ -306,7 +306,7 @@ const obras = [
   {f:"obra-09.jpg",w:809,h:1600},{f:"obra-10.jpg",w:809,h:1600},
   {f:"obra-11.jpg",w:1307,h:1600},{f:"obra-12.jpg",w:809,h:1600},
   {f:"obra-13.jpg",w:809,h:1600},{f:"obra-14.jpg",w:1600,h:1586},
-  {f:"obra-15.jpg",w:809,h:1600},{f:"obra-16.jpg",w:1600,h:1114},
+  {f:"obra-16.jpg",w:1600,h:1114},
   {f:"obra-17.jpg",w:900,h:1600},{f:"obra-18.jpg",w:1306,h:1600},
   {f:"obra-19.jpg",w:1452,h:1600},{f:"obra-20.jpg",w:900,h:1600},
   {f:"obra-21.jpg",w:809,h:1600},{f:"obra-22.jpg",w:1280,h:1600},
@@ -332,18 +332,39 @@ const obras = [
   {f:"obra-61.jpg",w:1362,h:1600},{f:"obra-62.jpg",w:1280,h:1600},
   {f:"obra-63.jpg",w:1268,h:1600},{f:"obra-64.jpg",w:1280,h:1600},
   {f:"obra-65.jpg",w:1280,h:1600},{f:"obra-66.jpg",w:1312,h:1600},
-  {f:"obra-67.jpg",w:1597,h:1600},{f:"obra-68.jpg",w:1600,h:1600}
+  {f:"obra-67.jpg",w:1597,h:1600},{f:"obra-68.jpg",w:1600,h:1600},
+  {f:"obra-69.jpg",w:1600,h:1600},{f:"obra-70.jpg",w:1298,h:1600},
+  {f:"obra-71.jpg",w:1304,h:1600},{f:"obra-72.jpg",w:1279,h:1600},
+  {f:"obra-73.jpg",w:1280,h:1600},{f:"obra-74.jpg",w:1485,h:1600},
+  {f:"obra-75.jpg",w:1279,h:1600},{f:"obra-76.jpg",w:1600,h:987},
+  {f:"obra-77.jpg",w:1478,h:1600},{f:"obra-78.jpg",w:1600,h:1600},
+  {f:"obra-79.jpg",w:1600,h:950},{f:"obra-80.jpg",w:1309,h:1600},
+  {f:"obra-81.jpg",w:1399,h:1600},{f:"obra-82.jpg",w:1280,h:1600},
+  {f:"obra-83.jpg",w:1600,h:1200},{f:"obra-84.jpg",w:1600,h:1512}
 ];
+
+// Si una imagen falla al cargar (conexión móvil inestable), reintenta hasta 3 veces
+function conReintento(img){
+  let intentos = 0;
+  img.addEventListener('error', () => {
+    if (intentos >= 3) return;
+    intentos++;
+    const src = img.src.split('?')[0];
+    setTimeout(() => { img.src = src + '?r=' + intentos; }, 800 * intentos);
+  });
+}
 
 const galeria = document.getElementById('galeria');
 obras.forEach((o, i) => {
   const fig = document.createElement('figure');
   const img = document.createElement('img');
-  img.src = 'img/' + o.f;
+  img.src = 'img/thumb/' + o.f;
   img.width = o.w;
   img.height = o.h;
-  img.loading = 'lazy';
+  img.loading = i < 6 ? 'eager' : 'lazy';
+  img.decoding = 'async';
   img.alt = 'Obra de Rodrigo Coletto';
+  conReintento(img);
   fig.appendChild(img);
   fig.addEventListener('click', () => abrir(i));
   galeria.appendChild(fig);
@@ -381,8 +402,10 @@ const cintaTrack = document.getElementById('cintaTrack');
 for (let vuelta = 0; vuelta < 2; vuelta++){
   cintaObras.forEach(f => {
     const img = document.createElement('img');
-    img.src = 'img/' + f;
+    img.src = 'img/thumb/' + f;
     img.alt = 'Obra de Rodrigo Coletto';
+    img.decoding = 'async';
+    conReintento(img);
     const idx = obras.findIndex(o => o.f === f);
     if (idx >= 0) img.addEventListener('click', () => abrir(idx));
     cintaTrack.appendChild(img);
