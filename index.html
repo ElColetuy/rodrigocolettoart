@@ -478,8 +478,8 @@ const obras = [
   {f:"obra-84.jpg",w:1600,h:1512,t:"Bodegón naranja y azul",tec:"Óleo sobre bastidor",med:"100 × 100 cm",an:"2023",cat:"retrato"}
 ];
 
-// Ordenar las obras por año, de la más vieja a la más nueva (las sin año van al final)
-obras.sort((a, b) => (parseInt(a.an) || 9999) - (parseInt(b.an) || 9999));
+// Ordenar las obras por año, de la más nueva a la más vieja (las sin año van al final)
+obras.sort((a, b) => (parseInt(b.an) || 0) - (parseInt(a.an) || 0));
 
 // Si una imagen falla al cargar (conexión móvil inestable), reintenta hasta 3 veces
 function conReintento(img){
