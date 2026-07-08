@@ -139,10 +139,17 @@
   }
 
   /* ---------- filtros de categoría ---------- */
+  .grupo-filtro{margin:0 auto 1.4rem;text-align:center}
+  .filtro-label{
+    display:block;margin-bottom:.7rem;
+    font-size:.66rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gris);
+  }
+  .sin-obras{text-align:center;color:var(--gris);font-style:italic;margin:1.5rem 0}
   .filtros{
     display:flex;flex-wrap:wrap;justify-content:center;
-    gap:.55rem;margin:0 auto 2.6rem;
+    gap:.55rem;
   }
+  .grupo-filtro:last-of-type{margin-bottom:2.6rem}
   .filtros button{
     font-family:inherit;background:none;
     border:1px solid var(--linea);color:var(--gris);
@@ -295,7 +302,15 @@
       <h2>Obras</h2>
       <p>Óleos, dibujos y acuarelas. Elegí una categoría o hacé clic en cualquier obra para verla en grande.</p>
     </div>
-    <div class="filtros" id="filtros"></div>
+    <div class="grupo-filtro">
+      <span class="filtro-label">Tema</span>
+      <div class="filtros" id="filtros"></div>
+    </div>
+    <div class="grupo-filtro">
+      <span class="filtro-label">Técnica</span>
+      <div class="filtros" id="filtrosTec"></div>
+    </div>
+    <p class="sin-obras" id="sinObras" hidden>No hay obras con esa combinación.</p>
     <div class="galeria" id="galeria"></div>
   </section>
 
@@ -350,9 +365,24 @@ const categorias = [
   {id:"paisaje", nombre:"Paisajes"},
   {id:"marina", nombre:"Marinas y botes"},
   {id:"ciudad", nombre:"Ciudad"},
-  {id:"retrato", nombre:"Retratos y figura"},
-  {id:"otros", nombre:"Otros"}
+  {id:"retrato", nombre:"Retratos y figura"}
 ];
+
+const tecnicas = [
+  {id:"todas", nombre:"Todas"},
+  {id:"oleo", nombre:"Óleo"},
+  {id:"acuarela", nombre:"Acuarela"},
+  {id:"lapiz", nombre:"Lápiz"},
+  {id:"pastel", nombre:"Pastel"}
+];
+function tecDe(o){
+  const t = (o.tec || '').toLowerCase();
+  if (t.includes('óleo')) return 'oleo';
+  if (t.includes('acuarela')) return 'acuarela';
+  if (t.includes('lápiz')) return 'lapiz';
+  if (t.includes('pastel')) return 'pastel';
+  return '';
+}
 
 const obras = [
   {f:"obra-01.jpg",w:1273,h:1600,t:"Experienced hands",tec:"Óleo sobre bastidor",med:"50 × 40 cm",an:"2020",cat:"retrato",ref:"Estudio basado en un cuadro de Frederick Hall"},
@@ -381,7 +411,7 @@ const obras = [
   {f:"obra-27.jpg",w:1578,h:1600,t:"Granja roja",tec:"Acuarela",med:"A4",an:"2019",cat:"paisaje"},
   {f:"obra-28.jpg",w:809,h:1600,t:"Omar Gutiérrez (joven)",tec:"Óleo sobre bastidor",med:"60 × 40 cm",an:"2020",cat:"retrato"},
   {f:"obra-30.jpg",w:1046,h:1600,t:"Isle of Skye",tec:"Óleo sobre bastidor",med:"30 × 20 cm",an:"2020",cat:"marina"},
-  {f:"obra-31.jpg",w:1092,h:1600,t:"Tuco y Lola",tec:"Óleo sobre bastidor",med:"30 × 50 cm",an:"2020",cat:"otros"},
+  {f:"obra-31.jpg",w:1092,h:1600,t:"Tuco y Lola",tec:"Óleo sobre bastidor",med:"30 × 50 cm",an:"2020",cat:"retrato"},
   {f:"obra-32.jpg",w:1227,h:1600,t:"Niña — estudio de retrato",tec:"Óleo sobre bastidor",med:"45 × 35 cm",an:"2020",cat:"retrato"},
   {f:"obra-33.jpg",w:1057,h:1600,t:"The lighthouse",tec:"Óleo sobre bastidor",med:"60 × 40 cm",an:"2020",cat:"marina",ref:"Estudio inspirado en una pintura de Alexander Forbes"},
   {f:"obra-34.jpg",w:1217,h:1600,t:"Viejo pescador — estudio",tec:"Lápiz",med:"1/4 Watman",an:"2020",cat:"retrato"},
@@ -396,7 +426,7 @@ const obras = [
   {f:"obra-44.jpg",w:1200,h:1600,t:"El sol entre las nubes",tec:"Óleo sobre bastidor",med:"70 × 60 cm",an:"2023",cat:"paisaje"},
   {f:"obra-45.jpg",w:1312,h:1600,t:"Paisaje fantástico",tec:"Óleo sobre bastidor",med:"60 × 80 cm",an:"2024",cat:"paisaje"},
   {f:"obra-46.jpg",w:1600,h:1200,t:"Entre las rocas (Rocha)",tec:"Óleo sobre bastidor",med:"70 × 40 cm",an:"2024",cat:"marina"},
-  {f:"obra-47.jpg",w:1600,h:544,t:"Acuario",tec:"Óleo sobre bastidor",med:"200 × 50 cm",an:"2020",cat:"otros"},
+  {f:"obra-47.jpg",w:1600,h:544,t:"Acuario",tec:"Óleo sobre bastidor",med:"200 × 50 cm",an:"2020",cat:"retrato"},
   {f:"obra-48.jpg",w:1600,h:780,t:"El descanso colorido",tec:"Óleo sobre bastidor",med:"50 × 100 cm",an:"2020",cat:"paisaje"},
   {f:"obra-49.jpg",w:1600,h:1170,t:"Colonia del Sacramento",tec:"Óleo sobre bastidor",med:"30 × 50 cm",an:"2020",cat:"ciudad"},
   {f:"obra-50.jpg",w:1292,h:1600,t:"Havasu Falls",tec:"Óleo sobre bastidor",med:"40 × 80 cm",an:"2020",cat:"paisaje"},
@@ -428,7 +458,7 @@ const obras = [
   {f:"obra-80.jpg",w:1309,h:1600,t:"Estudio de bote — marina",tec:"Acuarela",med:"A4",an:"2019",cat:"marina"},
   {f:"obra-81.jpg",w:1399,h:1600,t:"Niña — estudio a lápiz",tec:"Lápiz",med:"A4",an:"2018",cat:"retrato"},
   {f:"obra-82.jpg",w:1280,h:1600,t:"Desesperación",tec:"Pastel",med:"A4",an:"2020",cat:"retrato"},
-  {f:"obra-84.jpg",w:1600,h:1512,t:"Bodegón naranja y azul",tec:"Óleo sobre bastidor",med:"100 × 100 cm",an:"2023",cat:"otros"}
+  {f:"obra-84.jpg",w:1600,h:1512,t:"Bodegón naranja y azul",tec:"Óleo sobre bastidor",med:"100 × 100 cm",an:"2023",cat:"retrato"}
 ];
 
 // Si una imagen falla al cargar (conexión móvil inestable), reintenta hasta 3 veces
@@ -466,31 +496,61 @@ obras.forEach((o, i) => {
   figuras.push(fig);
 });
 
-// ---------- filtros por categoría ----------
-let filtro = 'todas';
+// ---------- filtros combinados (tema + técnica) ----------
+let filtroTema = 'todas';
+let filtroTec = 'todas';
 const cajaFiltros = document.getElementById('filtros');
+const cajaFiltrosTec = document.getElementById('filtrosTec');
+const sinObras = document.getElementById('sinObras');
+
+function coincide(o){
+  return (filtroTema === 'todas' || o.cat === filtroTema) &&
+         (filtroTec === 'todas' || tecDe(o) === filtroTec);
+}
+function indicesVisibles(){
+  const arr = [];
+  obras.forEach((o, i) => { if (coincide(o)) arr.push(i); });
+  return arr;
+}
+function refrescarGaleria(){
+  let visibles = 0;
+  figuras.forEach((fig, i) => {
+    const ok = coincide(obras[i]);
+    fig.style.display = ok ? '' : 'none';
+    if (ok) visibles++;
+  });
+  sinObras.hidden = visibles > 0;
+}
+
 categorias.forEach(c => {
   const cuenta = c.id === 'todas' ? obras.length : obras.filter(o => o.cat === c.id).length;
   if (!cuenta) return;
   const btn = document.createElement('button');
   btn.textContent = c.nombre;
   if (c.id === 'todas') btn.classList.add('activo');
-  btn.addEventListener('click', () => aplicarFiltro(c.id, btn));
+  btn.addEventListener('click', () => {
+    filtroTema = c.id;
+    cajaFiltros.querySelectorAll('button').forEach(b => b.classList.remove('activo'));
+    btn.classList.add('activo');
+    refrescarGaleria();
+  });
   cajaFiltros.appendChild(btn);
 });
-function aplicarFiltro(id, btn){
-  filtro = id;
-  cajaFiltros.querySelectorAll('button').forEach(b => b.classList.remove('activo'));
-  btn.classList.add('activo');
-  figuras.forEach((fig, i) => {
-    fig.style.display = (id === 'todas' || obras[i].cat === id) ? '' : 'none';
+
+tecnicas.forEach(t => {
+  const cuenta = t.id === 'todas' ? obras.length : obras.filter(o => tecDe(o) === t.id).length;
+  if (!cuenta) return;
+  const btn = document.createElement('button');
+  btn.textContent = t.nombre;
+  if (t.id === 'todas') btn.classList.add('activo');
+  btn.addEventListener('click', () => {
+    filtroTec = t.id;
+    cajaFiltrosTec.querySelectorAll('button').forEach(b => b.classList.remove('activo'));
+    btn.classList.add('activo');
+    refrescarGaleria();
   });
-}
-function indicesVisibles(){
-  const arr = [];
-  obras.forEach((o, i) => { if (filtro === 'todas' || o.cat === filtro) arr.push(i); });
-  return arr;
-}
+  cajaFiltrosTec.appendChild(btn);
+});
 
 const visor = document.getElementById('visor');
 const visorImg = document.getElementById('visor-img');
