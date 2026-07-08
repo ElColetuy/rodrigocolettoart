@@ -55,7 +55,8 @@
     margin-top:1.8rem;
     display:flex;
     justify-content:center;
-    gap:2.4rem;
+    flex-wrap:wrap;
+    gap:1rem 2.4rem;
   }
   nav a{
     color:var(--tinta);
@@ -268,6 +269,17 @@
   #contacto h2{font-size:1.9rem;font-weight:500}
   #contacto p{color:var(--gris);margin-top:.6rem}
   #contacto a{color:var(--acento);text-decoration:none;border-bottom:1px solid var(--acento)}
+  #contacto .btn-ig{
+    display:inline-flex;align-items:center;gap:.55rem;
+    margin-top:1.6rem;
+    border:1px solid var(--acento);border-radius:2rem;
+    padding:.65rem 1.5rem;
+    color:var(--acento);
+    font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;
+    transition:background .2s,color .2s;
+  }
+  #contacto .btn-ig:hover{background:var(--acento);color:#fff}
+  #contacto .btn-ig svg{width:18px;height:18px}
   footer{
     border-top:1px solid var(--linea);
     text-align:center;
@@ -289,6 +301,7 @@
     <a href="#obras">Obras</a>
     <a href="#biografia">Biografía</a>
     <a href="#contacto">Contacto</a>
+    <a href="https://www.instagram.com/rodrigocolettoart/" target="_blank" rel="noopener">Instagram</a>
   </nav>
 </header>
 
@@ -330,6 +343,10 @@
     <h2>Contacto</h2>
     <p>Por consultas sobre obras, encargos o exposiciones:<br>
     <a href="mailto:rodrigocoletto14@gmail.com">rodrigocoletto14@gmail.com</a></p>
+    <a class="btn-ig" href="https://www.instagram.com/rodrigocolettoart/" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5.5"/><circle cx="12" cy="12" r="4"/><circle cx="17.6" cy="6.4" r="1.1" fill="currentColor" stroke="none"/></svg>
+      Seguime en Instagram
+    </a>
   </section>
 </main>
 
@@ -440,7 +457,7 @@ const obras = [
   {f:"obra-59.jpg",w:1170,h:1600,t:"Estudio de otoño",tec:"Óleo sobre cartón entelado",med:"24 × 18 cm",an:"2020",cat:"paisaje"},
   {f:"obra-61.jpg",w:1362,h:1600,t:"Estudio de Ivar",tec:"Acuarela",med:"A4",an:"2020",cat:"retrato"},
   {f:"obra-62.jpg",w:1280,h:1600,t:"Estudio de retrato (Miradas)",tec:"Lápiz",med:"1/4 Watman",an:"2020",cat:"retrato"},
-  {f:"obra-64.jpg",w:1280,h:1600,t:"Estudio — los Gallagher",tec:"",med:"",an:"",cat:"retrato"},
+  {f:"obra-64.jpg",w:1280,h:1600,t:"Estudio — los Gallagher",tec:"",med:"",an:"2020",cat:"retrato"},
   {f:"obra-65.jpg",w:1280,h:1600,t:"Luisa Cuesta",tec:"Acuarela",med:"1/4 Watman",an:"2019",cat:"retrato"},
   {f:"obra-66.jpg",w:1312,h:1600,t:"Bote — estudio (primeros óleos)",tec:"Óleo sobre cartón entelado",med:"24 × 18 cm",an:"2019",cat:"marina"},
   {f:"obra-67.jpg",w:1597,h:1600,t:"Río y atardecer con flora",tec:"Acuarela",med:"",an:"2019",cat:"paisaje"},
@@ -460,6 +477,9 @@ const obras = [
   {f:"obra-82.jpg",w:1280,h:1600,t:"Desesperación",tec:"Pastel",med:"A4",an:"2020",cat:"retrato"},
   {f:"obra-84.jpg",w:1600,h:1512,t:"Bodegón naranja y azul",tec:"Óleo sobre bastidor",med:"100 × 100 cm",an:"2023",cat:"retrato"}
 ];
+
+// Ordenar las obras por año, de la más vieja a la más nueva (las sin año van al final)
+obras.sort((a, b) => (parseInt(a.an) || 9999) - (parseInt(b.an) || 9999));
 
 // Si una imagen falla al cargar (conexión móvil inestable), reintenta hasta 3 veces
 function conReintento(img){
