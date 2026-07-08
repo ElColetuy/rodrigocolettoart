@@ -105,14 +105,19 @@
   .intro-galeria h2{font-size:2.1rem;font-weight:500}
   .intro-galeria p{color:var(--gris);font-size:.98rem;margin-top:.5rem}
   .galeria{
-    columns:3;
-    column-gap:1.4rem;
+    display:flex;
+    gap:1.4rem;
+    align-items:flex-start;
   }
-  @media(max-width:900px){.galeria{columns:2}}
-  @media(max-width:560px){.galeria{columns:1}}
+  .col-masonry{
+    flex:1;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:1.4rem;
+  }
   .galeria figure{
-    break-inside:avoid;
-    margin:0 0 1.4rem;
+    margin:0;
     cursor:zoom-in;
     position:relative;
   }
@@ -512,7 +517,6 @@ obras.forEach((o, i) => {
   fig.appendChild(img);
   fig.appendChild(cap);
   fig.addEventListener('click', () => abrir(i));
-  galeria.appendChild(fig);
   figuras.push(fig);
 });
 
@@ -532,15 +536,42 @@ function indicesVisibles(){
   obras.forEach((o, i) => { if (coincide(o)) arr.push(i); });
   return arr;
 }
+function numColumnas(){
+  const w = window.innerWidth;
+  if (w <= 560) return 1;
+  if (w <= 900) return 2;
+  return 3;
+}
+let colsActuales = 0;
+// Reparte las obras visibles por FILAS (1-2-3, luego 4-5-6…) en columnas tipo mosaico
 function refrescarGaleria(){
+  const n = numColumnas();
+  colsActuales = n;
+  galeria.innerHTML = '';
+  const cols = [];
+  for (let c = 0; c < n; c++){
+    const col = document.createElement('div');
+    col.className = 'col-masonry';
+    galeria.appendChild(col);
+    cols.push(col);
+  }
   let visibles = 0;
   figuras.forEach((fig, i) => {
-    const ok = coincide(obras[i]);
-    fig.style.display = ok ? '' : 'none';
-    if (ok) visibles++;
+    if (coincide(obras[i])){
+      cols[visibles % n].appendChild(fig);
+      visibles++;
+    }
   });
   sinObras.hidden = visibles > 0;
 }
+// Rearmar si cambia la cantidad de columnas (girar el teléfono, redimensionar)
+let tResize;
+window.addEventListener('resize', () => {
+  clearTimeout(tResize);
+  tResize = setTimeout(() => {
+    if (numColumnas() !== colsActuales) refrescarGaleria();
+  }, 150);
+});
 
 categorias.forEach(c => {
   const cuenta = c.id === 'todas' ? obras.length : obras.filter(o => o.cat === c.id).length;
@@ -571,6 +602,9 @@ tecnicas.forEach(t => {
   });
   cajaFiltrosTec.appendChild(btn);
 });
+
+// Dibujar la galería por primera vez
+refrescarGaleria();
 
 const visor = document.getElementById('visor');
 const visorImg = document.getElementById('visor-img');
