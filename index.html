@@ -127,6 +127,31 @@
     transform:translateY(-3px);
     box-shadow:0 2px 5px rgba(38,34,28,.2),0 14px 30px rgba(38,34,28,.14);
   }
+  .galeria figcaption{padding:.55rem .15rem .2rem}
+  .cap-titulo{
+    display:block;
+    font-family:'Cormorant Garamond',Georgia,serif;
+    font-size:1.05rem;line-height:1.25;color:var(--tinta);
+  }
+  .cap-datos{
+    display:block;margin-top:.15rem;
+    font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gris);
+  }
+
+  /* ---------- filtros de categoría ---------- */
+  .filtros{
+    display:flex;flex-wrap:wrap;justify-content:center;
+    gap:.55rem;margin:0 auto 2.6rem;
+  }
+  .filtros button{
+    font-family:inherit;background:none;
+    border:1px solid var(--linea);color:var(--gris);
+    padding:.4rem 1.05rem;border-radius:2rem;
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    cursor:pointer;transition:background .2s,border-color .2s,color .2s;
+  }
+  .filtros button:hover{border-color:var(--acento);color:var(--acento)}
+  .filtros button.activo{background:var(--acento);border-color:var(--acento);color:#fff}
 
   /* ---------- visor ---------- */
   #visor{
@@ -152,8 +177,22 @@
     position:absolute;bottom:1rem;left:50%;
     transform:translateX(-50%);
     display:flex;flex-direction:column;align-items:center;gap:.7rem;
-    width:min(88vw,420px);
+    width:min(88vw,460px);
     z-index:2;
+  }
+  .ficha{text-align:center;color:#e8e2d5;line-height:1.35;max-width:100%}
+  .ficha-titulo{
+    font-family:'Cormorant Garamond',Georgia,serif;
+    font-size:1.3rem;font-weight:500;
+    text-shadow:0 1px 6px rgba(0,0,0,.95);
+  }
+  .ficha-datos{
+    font-size:.74rem;letter-spacing:.1em;color:#e3ddd0;margin-top:.12rem;
+    text-shadow:0 1px 5px rgba(0,0,0,.95);
+  }
+  .ficha-ref{
+    font-size:.74rem;font-style:italic;color:#c9c1b3;margin-top:.1rem;
+    text-shadow:0 1px 5px rgba(0,0,0,.95);
   }
   .zoom-barra{
     display:flex;align-items:center;gap:.8rem;
@@ -191,6 +230,8 @@
   @media(max-width:560px){
     #ant{left:0}#sig{right:0}
     #visor button{padding:.7rem}
+    #visor img{max-height:60vh}
+    .ficha-titulo{font-size:1.1rem}
   }
 
   /* ---------- biografía ---------- */
@@ -252,8 +293,9 @@
   <section id="obras">
     <div class="intro-galeria">
       <h2>Obras</h2>
-      <p>Óleos, dibujos y acuarelas. Hacé clic en cualquier obra para verla en grande.</p>
+      <p>Óleos, dibujos y acuarelas. Elegí una categoría o hacé clic en cualquier obra para verla en grande.</p>
     </div>
+    <div class="filtros" id="filtros"></div>
     <div class="galeria" id="galeria"></div>
   </section>
 
@@ -288,6 +330,11 @@
   <img id="visor-img" src="" alt="Obra de Rodrigo Coletto" draggable="false">
   <button id="sig" aria-label="Siguiente">›</button>
   <div class="controles">
+    <div class="ficha">
+      <div class="ficha-titulo" id="fTitulo"></div>
+      <div class="ficha-datos" id="fDatos"></div>
+      <div class="ficha-ref" id="fRef"></div>
+    </div>
     <div class="zoom-barra">
       <span id="zoom-menos" aria-hidden="true">−</span>
       <input type="range" id="zoom" min="1" max="4" step="0.05" value="1" aria-label="Nivel de zoom">
@@ -298,49 +345,90 @@
 </div>
 
 <script>
+const categorias = [
+  {id:"todas", nombre:"Todas"},
+  {id:"paisaje", nombre:"Paisajes"},
+  {id:"marina", nombre:"Marinas y botes"},
+  {id:"ciudad", nombre:"Ciudad"},
+  {id:"retrato", nombre:"Retratos y figura"},
+  {id:"otros", nombre:"Otros"}
+];
+
 const obras = [
-  {f:"obra-01.jpg",w:1273,h:1600},{f:"obra-02.jpg",w:1065,h:1600},
-  {f:"obra-03.jpg",w:1273,h:1600},{f:"obra-04.jpg",w:1037,h:1600},
-  {f:"obra-05.jpg",w:1110,h:1600},{f:"obra-06.jpg",w:1025,h:1600},
-  {f:"obra-07.jpg",w:1600,h:1333},{f:"obra-08.jpg",w:1198,h:1600},
-  {f:"obra-09.jpg",w:809,h:1600},{f:"obra-10.jpg",w:809,h:1600},
-  {f:"obra-11.jpg",w:1307,h:1600},{f:"obra-12.jpg",w:809,h:1600},
-  {f:"obra-13.jpg",w:809,h:1600},{f:"obra-14.jpg",w:1600,h:1586},
-  {f:"obra-16.jpg",w:1600,h:1114},
-  {f:"obra-17.jpg",w:900,h:1600},{f:"obra-18.jpg",w:1306,h:1600},
-  {f:"obra-19.jpg",w:1452,h:1600},{f:"obra-20.jpg",w:900,h:1600},
-  {f:"obra-21.jpg",w:809,h:1600},{f:"obra-22.jpg",w:1280,h:1600},
-  {f:"obra-23.jpg",w:809,h:1600},{f:"obra-24.jpg",w:1417,h:1600},
-  {f:"obra-25.jpg",w:1600,h:1093},{f:"obra-26.jpg",w:900,h:1600},
-  {f:"obra-27.jpg",w:1578,h:1600},{f:"obra-28.jpg",w:809,h:1600},
-  {f:"obra-30.jpg",w:1046,h:1600},
-  {f:"obra-31.jpg",w:1092,h:1600},{f:"obra-32.jpg",w:1227,h:1600},
-  {f:"obra-33.jpg",w:1057,h:1600},{f:"obra-34.jpg",w:1217,h:1600},
-  {f:"obra-35.jpg",w:1600,h:1115},{f:"obra-36.jpg",w:1076,h:1600},
-  {f:"obra-37.jpg",w:1245,h:1600},{f:"obra-38.jpg",w:1600,h:1200},
-  {f:"obra-39.jpg",w:1600,h:996},{f:"obra-40.jpg",w:1600,h:1200},
-  {f:"obra-41.jpg",w:1600,h:1200},{f:"obra-42.jpg",w:1200,h:1600},
-  {f:"obra-43.jpg",w:1004,h:1600},{f:"obra-44.jpg",w:1200,h:1600},
-  {f:"obra-45.jpg",w:1312,h:1600},{f:"obra-46.jpg",w:1600,h:1200},
-  {f:"obra-47.jpg",w:1600,h:544},{f:"obra-48.jpg",w:1600,h:780},
-  {f:"obra-49.jpg",w:1600,h:1170},{f:"obra-50.jpg",w:1292,h:1600},
-  {f:"obra-51.jpg",w:1242,h:1600},{f:"obra-52.jpg",w:1600,h:1200},
-  {f:"obra-53.jpg",w:1257,h:1600},{f:"obra-54.jpg",w:1142,h:1600},
-  {f:"obra-55.jpg",w:1120,h:1600},{f:"obra-56.jpg",w:788,h:1600},
-  {f:"obra-57.jpg",w:1037,h:1600},{f:"obra-58.jpg",w:1246,h:1600},
-  {f:"obra-59.jpg",w:1170,h:1600},{f:"obra-60.jpg",w:1279,h:1600},
-  {f:"obra-61.jpg",w:1362,h:1600},{f:"obra-62.jpg",w:1280,h:1600},
-  {f:"obra-63.jpg",w:1268,h:1600},{f:"obra-64.jpg",w:1280,h:1600},
-  {f:"obra-65.jpg",w:1280,h:1600},{f:"obra-66.jpg",w:1312,h:1600},
-  {f:"obra-67.jpg",w:1597,h:1600},{f:"obra-68.jpg",w:1600,h:1600},
-  {f:"obra-69.jpg",w:1600,h:1600},{f:"obra-70.jpg",w:1298,h:1600},
-  {f:"obra-71.jpg",w:1304,h:1600},{f:"obra-72.jpg",w:1279,h:1600},
-  {f:"obra-73.jpg",w:1280,h:1600},{f:"obra-74.jpg",w:1485,h:1600},
-  {f:"obra-75.jpg",w:1279,h:1600},{f:"obra-76.jpg",w:1600,h:987},
-  {f:"obra-77.jpg",w:1478,h:1600},{f:"obra-78.jpg",w:1600,h:1600},
-  {f:"obra-79.jpg",w:1600,h:950},{f:"obra-80.jpg",w:1309,h:1600},
-  {f:"obra-81.jpg",w:1399,h:1600},{f:"obra-82.jpg",w:1280,h:1600},
-  {f:"obra-83.jpg",w:1600,h:1200},{f:"obra-84.jpg",w:1600,h:1512}
+  {f:"obra-01.jpg",w:1273,h:1600,t:"Experienced hands",tec:"Óleo sobre bastidor",med:"50 × 40 cm",an:"2020",cat:"retrato",ref:"Estudio basado en un cuadro de Frederick Hall"},
+  {f:"obra-02.jpg",w:1065,h:1600,t:"Chica a lápiz — estudio (Miradas)",tec:"Lápiz",med:"1/4 Watman",an:"2020",cat:"retrato"},
+  {f:"obra-03.jpg",w:1273,h:1600,t:"Estudio de montaña y pinos",tec:"Óleo sobre cartón entelado",med:"30 × 25 cm",an:"2020",cat:"paisaje"},
+  {f:"obra-04.jpg",w:1037,h:1600,t:"Calles de New York",tec:"Óleo sobre cartón entelado",med:"60 × 40 cm",an:"2020",cat:"ciudad"},
+  {f:"obra-05.jpg",w:1110,h:1600,t:"Cascada",tec:"Óleo sobre bastidor",med:"100 × 70 cm",an:"2020",cat:"paisaje",ref:"Estudio inspirado en un cuadro de Josef Thoma"},
+  {f:"obra-06.jpg",w:1025,h:1600,t:"Bote — estudio de colores",tec:"Óleo sobre cartón entelado",med:"30 × 20 cm",an:"2020",cat:"marina"},
+  {f:"obra-07.jpg",w:1600,h:1333,t:"Paisaje de montañas chileno",tec:"Óleo sobre bastidor",med:"50 × 60 cm",an:"2020",cat:"paisaje"},
+  {f:"obra-08.jpg",w:1198,h:1600,t:"Atardecer rosa y bote",tec:"Óleo sobre cartón entelado",med:"24 × 18 cm",an:"2020",cat:"marina"},
+  {f:"obra-09.jpg",w:809,h:1600,t:"Robin Williams (Good Will Hunting)",tec:"Acuarela",med:"A4",an:"2019",cat:"retrato"},
+  {f:"obra-11.jpg",w:1307,h:1600,t:"Punta del Diablo",tec:"Óleo sobre bastidor",med:"50 × 40 cm",an:"2020",cat:"marina"},
+  {f:"obra-12.jpg",w:809,h:1600,t:"Playa opuesta",tec:"Óleo sobre bastidor",med:"50 × 40 cm",an:"",cat:"marina"},
+  {f:"obra-14.jpg",w:1600,h:1586,t:"Bote en el lago",tec:"Óleo sobre bastidor",med:"120 × 60 cm",an:"2020",cat:"marina"},
+  {f:"obra-16.jpg",w:1600,h:1114,t:"Paisaje",tec:"Óleo sobre bastidor",med:"60 × 100 cm",an:"2021",cat:"paisaje",ref:"Estudio inspirado en Josef Thoma"},
+  {f:"obra-17.jpg",w:900,h:1600,t:"Camino a la playa",tec:"Óleo sobre bastidor",med:"30 × 20 cm",an:"2021",cat:"marina"},
+  {f:"obra-18.jpg",w:1306,h:1600,t:"Yo y papá",tec:"Óleo sobre bastidor",med:"90 × 60 cm",an:"2020",cat:"retrato"},
+  {f:"obra-19.jpg",w:1452,h:1600,t:"Niño llorando — estudio",tec:"Lápiz",med:"A4",an:"2020",cat:"retrato"},
+  {f:"obra-20.jpg",w:900,h:1600,t:"Cascada",tec:"Óleo sobre bastidor",med:"80 × 50 cm",an:"2021",cat:"paisaje",ref:"Estudio basado en una pintura de Herman Herzog"},
+  {f:"obra-21.jpg",w:809,h:1600,t:"Alfredo Zitarrosa",tec:"Lápiz",med:"1/4 Watman",an:"2019",cat:"retrato"},
+  {f:"obra-22.jpg",w:1280,h:1600,t:"Niña del Tíbet",tec:"Pastel",med:"A4",an:"2020",cat:"retrato",ref:"Estudio basado en una foto de Steve McCurry"},
+  {f:"obra-23.jpg",w:809,h:1600,t:"Big Ben, Londres",tec:"Acuarela",med:"A4",an:"2019",cat:"ciudad"},
+  {f:"obra-24.jpg",w:1417,h:1600,t:"Niño en invierno — estudio",tec:"Lápiz",med:"A4",an:"2020",cat:"retrato"},
+  {f:"obra-25.jpg",w:1600,h:1093,t:"Marinero con pipa",tec:"Acuarela",med:"",an:"2019",cat:"retrato"},
+  {f:"obra-26.jpg",w:900,h:1600,t:"Bote, cascada y pino",tec:"Óleo sobre bastidor",med:"60 × 90 cm",an:"2021",cat:"paisaje",ref:"Estudio basado en una pintura de Josef Thoma"},
+  {f:"obra-27.jpg",w:1578,h:1600,t:"Granja roja",tec:"Acuarela",med:"A4",an:"2019",cat:"paisaje"},
+  {f:"obra-28.jpg",w:809,h:1600,t:"Omar Gutiérrez (joven)",tec:"Óleo sobre bastidor",med:"60 × 40 cm",an:"2020",cat:"retrato"},
+  {f:"obra-30.jpg",w:1046,h:1600,t:"Isle of Skye",tec:"Óleo sobre bastidor",med:"30 × 20 cm",an:"2020",cat:"marina"},
+  {f:"obra-31.jpg",w:1092,h:1600,t:"Tuco y Lola",tec:"Óleo sobre bastidor",med:"30 × 50 cm",an:"2020",cat:"otros"},
+  {f:"obra-32.jpg",w:1227,h:1600,t:"Niña — estudio de retrato",tec:"Óleo sobre bastidor",med:"45 × 35 cm",an:"2020",cat:"retrato"},
+  {f:"obra-33.jpg",w:1057,h:1600,t:"The lighthouse",tec:"Óleo sobre bastidor",med:"60 × 40 cm",an:"2020",cat:"marina",ref:"Estudio inspirado en una pintura de Alexander Forbes"},
+  {f:"obra-34.jpg",w:1217,h:1600,t:"Viejo pescador — estudio",tec:"Lápiz",med:"1/4 Watman",an:"2020",cat:"retrato"},
+  {f:"obra-35.jpg",w:1600,h:1115,t:"Colegio Santa Elena, Montevideo",tec:"Acuarela",med:"1/4 Watman",an:"2019",cat:"ciudad"},
+  {f:"obra-36.jpg",w:1076,h:1600,t:"Bayards Cove",tec:"Óleo sobre bastidor",med:"50 × 35 cm",an:"2019",cat:"ciudad"},
+  {f:"obra-37.jpg",w:1245,h:1600,t:"Primer retrato al óleo — estudio",tec:"Óleo sobre bastidor",med:"",an:"2019",cat:"retrato"},
+  {f:"obra-38.jpg",w:1600,h:1200,t:"José «Pepe» de Elía",tec:"Óleo sobre bastidor",med:"80 × 50 cm",an:"2021",cat:"retrato"},
+  {f:"obra-39.jpg",w:1600,h:996,t:"Embajada de Francia",tec:"Óleo sobre bastidor",med:"60 × 90 cm",an:"2021",cat:"ciudad"},
+  {f:"obra-40.jpg",w:1600,h:1200,t:"Biblioteca Nacional",tec:"Óleo sobre bastidor",med:"60 × 90 cm",an:"2021",cat:"ciudad"},
+  {f:"obra-42.jpg",w:1200,h:1600,t:"Presidentes uruguayos",tec:"Óleo sobre bastidor",med:"2 × 1,20 m",an:"2021",cat:"retrato"},
+  {f:"obra-43.jpg",w:1004,h:1600,t:"Atardecer en Laguna Negra",tec:"Óleo sobre bastidor",med:"70 × 100 cm",an:"2023",cat:"paisaje"},
+  {f:"obra-44.jpg",w:1200,h:1600,t:"El sol entre las nubes",tec:"Óleo sobre bastidor",med:"70 × 60 cm",an:"2023",cat:"paisaje"},
+  {f:"obra-45.jpg",w:1312,h:1600,t:"Paisaje fantástico",tec:"Óleo sobre bastidor",med:"60 × 80 cm",an:"2024",cat:"paisaje"},
+  {f:"obra-46.jpg",w:1600,h:1200,t:"Entre las rocas (Rocha)",tec:"Óleo sobre bastidor",med:"70 × 40 cm",an:"2024",cat:"marina"},
+  {f:"obra-47.jpg",w:1600,h:544,t:"Acuario",tec:"Óleo sobre bastidor",med:"200 × 50 cm",an:"2020",cat:"otros"},
+  {f:"obra-48.jpg",w:1600,h:780,t:"El descanso colorido",tec:"Óleo sobre bastidor",med:"50 × 100 cm",an:"2020",cat:"paisaje"},
+  {f:"obra-49.jpg",w:1600,h:1170,t:"Colonia del Sacramento",tec:"Óleo sobre bastidor",med:"30 × 50 cm",an:"2020",cat:"ciudad"},
+  {f:"obra-50.jpg",w:1292,h:1600,t:"Havasu Falls",tec:"Óleo sobre bastidor",med:"40 × 80 cm",an:"2020",cat:"paisaje"},
+  {f:"obra-52.jpg",w:1600,h:1200,t:"Estudio de figura humana",tec:"Lápiz",med:"A4",an:"2020",cat:"retrato"},
+  {f:"obra-53.jpg",w:1257,h:1600,t:"18 de Julio y Barbato",tec:"Óleo sobre cartón entelado",med:"45 × 35 cm",an:"2020",cat:"ciudad"},
+  {f:"obra-54.jpg",w:1142,h:1600,t:"Estudio de retrato (Miradas)",tec:"Lápiz",med:"1/4 Watman",an:"2020",cat:"retrato"},
+  {f:"obra-55.jpg",w:1120,h:1600,t:"Estudio de retrato (Miradas)",tec:"Lápiz",med:"1/4 Watman",an:"2020",cat:"retrato"},
+  {f:"obra-56.jpg",w:788,h:1600,t:"Cascada",tec:"Óleo sobre bastidor",med:"100 × 50 cm",an:"2020",cat:"paisaje",ref:"Estudio inspirado en Andreas Achenbach"},
+  {f:"obra-57.jpg",w:1037,h:1600,t:"Estudio de retrato",tec:"Lápiz",med:"1/4 Watman",an:"2020",cat:"retrato"},
+  {f:"obra-58.jpg",w:1246,h:1600,t:"Estudio de retrato (Miradas)",tec:"Lápiz",med:"1/4 Watman",an:"2020",cat:"retrato"},
+  {f:"obra-59.jpg",w:1170,h:1600,t:"Estudio de otoño",tec:"Óleo sobre cartón entelado",med:"24 × 18 cm",an:"2020",cat:"paisaje"},
+  {f:"obra-61.jpg",w:1362,h:1600,t:"Estudio de Ivar",tec:"Acuarela",med:"A4",an:"2020",cat:"retrato"},
+  {f:"obra-62.jpg",w:1280,h:1600,t:"Estudio de retrato (Miradas)",tec:"Lápiz",med:"1/4 Watman",an:"2020",cat:"retrato"},
+  {f:"obra-64.jpg",w:1280,h:1600,t:"Estudio — los Gallagher",tec:"",med:"",an:"",cat:"retrato"},
+  {f:"obra-65.jpg",w:1280,h:1600,t:"Luisa Cuesta",tec:"Acuarela",med:"1/4 Watman",an:"2019",cat:"retrato"},
+  {f:"obra-66.jpg",w:1312,h:1600,t:"Bote — estudio (primeros óleos)",tec:"Óleo sobre cartón entelado",med:"24 × 18 cm",an:"2019",cat:"marina"},
+  {f:"obra-67.jpg",w:1597,h:1600,t:"Río y atardecer con flora",tec:"Acuarela",med:"",an:"2019",cat:"paisaje"},
+  {f:"obra-68.jpg",w:1600,h:1600,t:"Primer cuadro grande de acuarela",tec:"Acuarela",med:"40 × 50 cm",an:"2018",cat:"marina"},
+  {f:"obra-69.jpg",w:1600,h:1600,t:"Estudio de figura humana",tec:"Lápiz",med:"A4",an:"2020",cat:"retrato"},
+  {f:"obra-70.jpg",w:1298,h:1600,t:"Estudio de retrato — Pedro",tec:"Lápiz",med:"A4",an:"2020",cat:"retrato"},
+  {f:"obra-71.jpg",w:1304,h:1600,t:"Retrato de viejo — estudio",tec:"Acuarela",med:"1/4 Watman",an:"2019",cat:"retrato"},
+  {f:"obra-72.jpg",w:1279,h:1600,t:"Camping",tec:"Óleo sobre cartón entelado",med:"30 × 24 cm",an:"2020",cat:"paisaje"},
+  {f:"obra-73.jpg",w:1280,h:1600,t:"Estudio de retrato (Miradas)",tec:"Lápiz",med:"1/4 Watman",an:"2020",cat:"retrato"},
+  {f:"obra-74.jpg",w:1485,h:1600,t:"Camino de flores",tec:"Óleo sobre cartón entelado",med:"24 × 18 cm",an:"2020",cat:"paisaje"},
+  {f:"obra-76.jpg",w:1600,h:987,t:"Liceo IAVA",tec:"Óleo sobre bastidor",med:"50 × 80 cm",an:"2020",cat:"ciudad"},
+  {f:"obra-77.jpg",w:1478,h:1600,t:"El gaucho — estudio",tec:"Óleo sobre tabla",med:"50 × 40 cm",an:"2021",cat:"retrato"},
+  {f:"obra-78.jpg",w:1600,h:1600,t:"Estudio inspirado en pintura",tec:"Óleo sobre cartón entelado",med:"30 × 24 cm",an:"2019",cat:"paisaje"},
+  {f:"obra-79.jpg",w:1600,h:950,t:"Una puerta hacia la naturaleza (cascada de Iguazú)",tec:"Óleo sobre bastidor",med:"2 × 1,20 m",an:"2021",cat:"paisaje"},
+  {f:"obra-80.jpg",w:1309,h:1600,t:"Estudio de bote — marina",tec:"Acuarela",med:"A4",an:"2019",cat:"marina"},
+  {f:"obra-81.jpg",w:1399,h:1600,t:"Niña — estudio a lápiz",tec:"Lápiz",med:"A4",an:"2018",cat:"retrato"},
+  {f:"obra-82.jpg",w:1280,h:1600,t:"Desesperación",tec:"Pastel",med:"A4",an:"2020",cat:"retrato"},
+  {f:"obra-84.jpg",w:1600,h:1512,t:"Bodegón naranja y azul",tec:"Óleo sobre bastidor",med:"100 × 100 cm",an:"2023",cat:"otros"}
 ];
 
 // Si una imagen falla al cargar (conexión móvil inestable), reintenta hasta 3 veces
@@ -355,20 +443,54 @@ function conReintento(img){
 }
 
 const galeria = document.getElementById('galeria');
+const figuras = [];
 obras.forEach((o, i) => {
   const fig = document.createElement('figure');
+  fig.dataset.cat = o.cat;
   const img = document.createElement('img');
   img.src = 'img/thumb/' + o.f;
   img.width = o.w;
   img.height = o.h;
   img.loading = i < 6 ? 'eager' : 'lazy';
   img.decoding = 'async';
-  img.alt = 'Obra de Rodrigo Coletto';
+  img.alt = o.t + ' — obra de Rodrigo Coletto';
   conReintento(img);
+  const cap = document.createElement('figcaption');
+  const datos = [o.tec, o.an].filter(Boolean).join(' · ');
+  cap.innerHTML = '<span class="cap-titulo">' + o.t + '</span>' +
+    (datos ? '<span class="cap-datos">' + datos + '</span>' : '');
   fig.appendChild(img);
+  fig.appendChild(cap);
   fig.addEventListener('click', () => abrir(i));
   galeria.appendChild(fig);
+  figuras.push(fig);
 });
+
+// ---------- filtros por categoría ----------
+let filtro = 'todas';
+const cajaFiltros = document.getElementById('filtros');
+categorias.forEach(c => {
+  const cuenta = c.id === 'todas' ? obras.length : obras.filter(o => o.cat === c.id).length;
+  if (!cuenta) return;
+  const btn = document.createElement('button');
+  btn.textContent = c.nombre;
+  if (c.id === 'todas') btn.classList.add('activo');
+  btn.addEventListener('click', () => aplicarFiltro(c.id, btn));
+  cajaFiltros.appendChild(btn);
+});
+function aplicarFiltro(id, btn){
+  filtro = id;
+  cajaFiltros.querySelectorAll('button').forEach(b => b.classList.remove('activo'));
+  btn.classList.add('activo');
+  figuras.forEach((fig, i) => {
+    fig.style.display = (id === 'todas' || obras[i].cat === id) ? '' : 'none';
+  });
+}
+function indicesVisibles(){
+  const arr = [];
+  obras.forEach((o, i) => { if (filtro === 'todas' || o.cat === filtro) arr.push(i); });
+  return arr;
+}
 
 const visor = document.getElementById('visor');
 const visorImg = document.getElementById('visor-img');
@@ -386,18 +508,25 @@ function cerrar(){
   document.body.style.overflow = '';
 }
 function mostrar(){
-  visorImg.src = 'img/' + obras[actual].f;
-  contador.textContent = (actual + 1) + ' / ' + obras.length;
+  const o = obras[actual];
+  visorImg.src = 'img/' + o.f;
+  const vis = indicesVisibles();
+  const pos = vis.indexOf(actual);
+  contador.textContent = (pos + 1) + ' / ' + vis.length;
+  document.getElementById('fTitulo').textContent = o.t;
+  const datos = [o.tec, o.med, o.an].filter(Boolean).join('  ·  ');
+  document.getElementById('fDatos').textContent = datos;
+  document.getElementById('fRef').textContent = o.ref || '';
   const desc = document.getElementById('descargar');
-  desc.href = 'img/' + obras[actual].f;
-  desc.setAttribute('download', 'rodrigo-coletto-' + obras[actual].f);
+  desc.href = 'img/' + o.f;
+  desc.setAttribute('download', 'rodrigo-coletto-' + o.f);
   resetZoom();
 }
 
 // ---------- carrusel superior ----------
-const cintaObras = ["obra-46.jpg","obra-03.jpg","obra-09.jpg","obra-16.jpg",
-  "obra-25.jpg","obra-32.jpg","obra-35.jpg","obra-39.jpg","obra-49.jpg",
-  "obra-60.jpg","obra-63.jpg","obra-67.jpg","obra-05.jpg","obra-27.jpg"];
+const cintaObras = ["obra-46.jpg","obra-05.jpg","obra-09.jpg","obra-45.jpg",
+  "obra-38.jpg","obra-40.jpg","obra-22.jpg","obra-79.jpg","obra-49.jpg",
+  "obra-01.jpg","obra-56.jpg","obra-84.jpg","obra-33.jpg","obra-27.jpg"];
 const cintaTrack = document.getElementById('cintaTrack');
 for (let vuelta = 0; vuelta < 2; vuelta++){
   cintaObras.forEach(f => {
@@ -473,7 +602,12 @@ function soltarPuntero(e){
 visorImg.addEventListener('pointerup', soltarPuntero);
 visorImg.addEventListener('pointercancel', soltarPuntero);
 function mover(d){
-  actual = (actual + d + obras.length) % obras.length;
+  const vis = indicesVisibles();
+  if (!vis.length) return;
+  let pos = vis.indexOf(actual);
+  if (pos === -1) pos = 0;
+  pos = (pos + d + vis.length) % vis.length;
+  actual = vis[pos];
   mostrar();
 }
 
