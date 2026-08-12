@@ -9,6 +9,17 @@
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
 <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="canonical" href="https://elcoletuy.github.io/rodrigocolettoart/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Rodrigo Coletto Art — Pintura, retrato y paisaje">
+<meta property="og:description" content="Óleos, dibujos y acuarelas de Rodrigo Coletto, artista de Montevideo, Uruguay. Retrato, paisaje, marinas y ciudad.">
+<meta property="og:url" content="https://elcoletuy.github.io/rodrigocolettoart/">
+<meta property="og:image" content="https://elcoletuy.github.io/rodrigocolettoart/img/obra-45.jpg">
+<meta property="og:locale" content="es_UY">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Person","name":"Rodrigo Coletto","jobTitle":"Artista plástico","nationality":"Uruguaya","url":"https://elcoletuy.github.io/rodrigocolettoart/","sameAs":["https://www.instagram.com/rodrigocolettoart/"],"image":"https://elcoletuy.github.io/rodrigocolettoart/favicon-512.png"}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
@@ -514,7 +525,7 @@ obras.forEach((o, i) => {
   img.height = o.h;
   img.loading = i < 6 ? 'eager' : 'lazy';
   img.decoding = 'async';
-  img.alt = o.t + ' — obra de Rodrigo Coletto';
+  img.alt = o.t + ' — ' + [o.tec, o.an].filter(Boolean).join(', ') + ' — Rodrigo Coletto, arte de Uruguay';
   conReintento(img);
   const cap = document.createElement('figcaption');
   const datos = [o.tec, o.an].filter(Boolean).join(' · ');
